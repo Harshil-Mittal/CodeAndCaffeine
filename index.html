@@ -10,22 +10,55 @@
         --brand-color: #47b4ea;
         --pastel-blue: #a3d5f1;
         --pastel-pink: #f5c8d1;
-        --background-color: #f0f8ff;
+        --light-background: #f0f8ff;
+        --light-text-primary: #1f2937;--light-text-secondary: #4b5563;--dark-background: #111827;--dark-text-primary: #f9fafb;--dark-text-secondary: #9ca3af;}
+      .dark {
+        --background-color: var(--dark-background);
+        --text-primary: var(--dark-text-primary);
+        --text-secondary: var(--dark-text-secondary);
+      }
+      .light {
+        --background-color: var(--light-background);
+        --text-primary: var(--light-text-primary);
+        --text-secondary: var(--light-text-secondary);
       }
     </style>
+<script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+        } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+        }
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            document.documentElement.classList.toggle('light', !isDark);
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+        }
+    </script>
 </head>
-<body class="bg-[var(--background-color)]" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)] transition-colors duration-300" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
 <div class="relative flex size-full min-h-screen flex-col overflow-x-hidden">
 <div class="absolute inset-0 z-0">
-<div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[var(--pastel-blue)] opacity-50 blur-3xl"></div>
-<div class="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[var(--pastel-pink)] opacity-50 blur-3xl"></div>
+<div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[var(--pastel-blue)] opacity-30 blur-3xl dark:opacity-20"></div>
+<div class="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[var(--pastel-pink)] opacity-30 blur-3xl dark:opacity-20"></div>
 </div>
+<header class="absolute top-0 left-0 right-0 z-20 p-4">
+<div class="container mx-auto flex justify-end">
+<button class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600" onclick="toggleTheme()" type="button">
+<svg class="hidden h-6 w-6" fill="currentColor" id="theme-toggle-dark-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+<svg class="hidden h-6 w-6" fill="currentColor" id="theme-toggle-light-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM4 10a1 1 0 11-2 0 1 1 0 012 0zm2.536 2.536l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 011.414-1.414z"></path></svg>
+</button>
+</div>
+</header>
 <div class="relative z-10 flex h-full grow flex-col items-center justify-center px-4 py-10">
 <div class="w-full max-w-lg text-center">
-<h1 class="text-4xl md:text-5xl font-bold text-gray-800 tracking-tight leading-tight mb-6">
+<h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
                 Something Awesome is Coming Soon!
             </h1>
-<p class="text-lg text-gray-600 mb-8">
+<p class="text-lg text-[var(--text-secondary)] mb-8">
                 Be the first to know when we launch. Enter your email below and we'll send you a notification.
             </p>
 <form action="https://formspree.io/f/xzzgwdvn" method="POST" class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -43,5 +76,20 @@
 </div>
 </div>
 </div>
-
+<script>
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    // Change the icons inside the button based on previous settings
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+    const themeToggleBtn = document.querySelector('button[onclick="toggleTheme()"]');
+    themeToggleBtn.addEventListener('click', function() {
+        // toggle icons inside button
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+    });
+</script>
 </body></html>
