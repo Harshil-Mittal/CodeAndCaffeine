@@ -159,6 +159,12 @@
     form?.addEventListener("submit", function () {
       document.getElementById("success-message").classList.remove("hidden");
     });
+
+    if (!localStorage.getItem('token')) {
+      window.location.href = 'auth.html';
+    }
+
+    localStorage.setItem('token', data.token);
   </script>
 </body>
 
