@@ -159,7 +159,7 @@
       form.querySelector('button[type="submit"]').disabled = true;
       showMsg('Signing up...', 'green');
       try {
-        const res = await fetch('http://localhost:3000/api/signup', {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password })
@@ -185,7 +185,7 @@
       form.querySelector('button[type="submit"]').disabled = true;
       showMsg('Signing in...', 'green');
       try {
-        const res = await fetch('http://localhost:3000/api/signin', {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/signin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
