@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sign in or Sign up — Code & Caffeine" />
+  <meta name="author" content="Harshil Mittal" />
+  <title>Sign In / Sign Up — Code & Caffeine</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B600%3B700%3B800" rel="stylesheet" onload="this.rel='stylesheet'" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style type="text/tailwindcss">
+    :root {
+      --brand-color: #47b4ea;
+      --pastel-blue: #a3d5f1;
+      --pastel-pink: #f5c8d1;
+      --light-background: #f0f8ff;
+      --light-text-primary: #1f2937;
+      --light-text-secondary: #4b5563;
+      --dark-background: #111827;
+      --dark-text-primary: #f9fafb;
+      --dark-text-secondary: #9ca3af;
+    }
+    .dark {
+      --background-color: var(--dark-background);
+      --text-primary: var(--dark-text-primary);
+      --text-secondary: var(--dark-text-secondary);
+    }
+    .light {
+      --background-color: var(--light-background);
+      --text-primary: var(--light-text-primary);
+      --text-secondary: var(--light-text-secondary);
+    }
+    @layer utilities {
+      .animate-fade-in {
+        animation: fadeIn 1.2s ease-in-out both;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes blob {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(20px, -10px) scale(1.05); }
+      }
+    }
+  </style>
+  <script>
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light', !isDark);
+      localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+    }
+  </script>
+</head>
+<body id="main-body" class="text-[var(--text-primary)] transition-colors duration-300 min-h-screen" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+  <div class="relative flex min-h-screen flex-col overflow-x-hidden animate-fade-in">
+    <header class="fixed top-0 left-0 w-full z-30 flex items-center justify-between px-6 py-4 bg-transparent pointer-events-none select-none">
+      <div class="text-2xl font-extrabold tracking-tight text-[var(--brand-color)] drop-shadow-lg pointer-events-auto select-auto">Code and Caffeine</div>
+      <button class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 pointer-events-auto" onclick="toggleTheme()" type="button">
+        <svg class="hidden h-6 w-6" fill="currentColor" id="theme-toggle-dark-icon" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg class="hidden h-6 w-6" fill="currentColor" id="theme-toggle-light-icon" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4 10a6 6 0 1112 0A6 6 0 014 10z"></path></svg>
+      </button>
+    </header>
+    <div id="bg-blobs" class="absolute inset-0 z-0 pointer-events-none"></div>
+    <div class="relative z-10 flex grow flex-col items-center justify-center px-4 py-10">
+      <div id="auth-card" class="w-full max-w-md bg-[#eaf6fb]/90 dark:bg-gray-900/70 rounded-2xl shadow-2xl p-8 backdrop-blur-2xl border border-[var(--pastel-blue)] dark:border-[var(--brand-color)] transition-all duration-300 will-change-transform" style="box-shadow: 0 8px 32px 0 rgba(71,180,234,0.12), 0 1.5px 8px 0 rgba(245,200,209,0.10);">
+        <div class="flex justify-center mb-6">
+          <button id="signInTab" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200 text-[var(--text-primary)] border-b-2 border-[var(--brand-color)] bg-white dark:bg-gray-900 shadow-sm shadow-[var(--brand-color)]/10 data-[active=true]:bg-[var(--brand-color)] data-[active=true]:text-white data-[active=true]:border-[var(--brand-color)]" type="button" data-active="true">Sign In</button>
+          <button id="signUpTab" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200 text-[var(--text-secondary)] border-b-2 border-transparent bg-white dark:bg-gray-900 hover:bg-[var(--pastel-blue)]/40 hover:text-[var(--brand-color)]" type="button" data-active="false">Sign Up</button>
+        </div>
+        <form id="signInForm" class="flex flex-col gap-4" autocomplete="on">
+          <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign In</button>
+        </form>
+        <form id="signUpForm" class="flex flex-col gap-4 hidden" autocomplete="on">
+          <input name="name" type="text" required placeholder="Name" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <input name="confirm-password" type="password" required placeholder="Confirm Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign Up</button>
+        </form>
+        <div id="auth-success-message" class="hidden mt-4 text-green-600 text-center">Success!</div>
+      </div>
+    </div>
+    <footer class="relative z-10 w-full text-center py-4 text-sm text-[var(--text-secondary)]">
+      Built with ☕ by <span class="font-medium text-[var(--text-primary)]">Harshil Mittal</span>
+    </footer>
+  </div>
+  <script>
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      themeToggleLightIcon.classList.remove('hidden');
+    } else {
+      themeToggleDarkIcon.classList.remove('hidden');
+    }
+    const themeToggleBtn = document.querySelector('button[onclick="toggleTheme()"]');
+    themeToggleBtn.addEventListener('click', function () {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+    });
+    // Tab toggle logic
+    const signInTab = document.getElementById('signInTab');
+    const signUpTab = document.getElementById('signUpTab');
+    const signInForm = document.getElementById('signInForm');
+    const signUpForm = document.getElementById('signUpForm');
+    signInTab.addEventListener('click', function () {
+      signInTab.classList.add('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
+      signInTab.classList.remove('text-[var(--text-secondary)]', 'bg-white');
+      signInTab.setAttribute('data-active', 'true');
+      signUpTab.classList.add('text-[var(--text-secondary)]', 'bg-white', 'border-transparent');
+      signUpTab.classList.remove('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
+      signUpTab.setAttribute('data-active', 'false');
+      signInForm.classList.remove('hidden');
+      signUpForm.classList.add('hidden');
+    });
+    signUpTab.addEventListener('click', function () {
+      signUpTab.classList.add('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
+      signUpTab.classList.remove('text-[var(--text-secondary)]', 'bg-white');
+      signUpTab.setAttribute('data-active', 'true');
+      signInTab.classList.add('text-[var(--text-secondary)]', 'bg-white', 'border-transparent');
+      signInTab.classList.remove('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
+      signInTab.setAttribute('data-active', 'false');
+      signUpForm.classList.remove('hidden');
+      signInForm.classList.add('hidden');
+    });
+    // Success message on submit
+    const successMsg = document.getElementById('auth-success-message');
+    function showMsg(msg, color = 'green') {
+      successMsg.textContent = msg;
+      successMsg.classList.remove('hidden');
+      successMsg.classList.toggle('text-green-600', color === 'green');
+      successMsg.classList.toggle('text-red-600', color === 'red');
+    }
+    function clearMsg() { successMsg.classList.add('hidden'); }
+
+    document.getElementById('signUpForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const form = e.target;
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      const confirm = form['confirm-password'].value;
+      if (password !== confirm) {
+        showMsg('Passwords do not match.', 'red');
+        return;
+      }
+      form.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Signing up...', 'green');
+      try {
+        const res = await fetch('http://localhost:3000/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('Signup successful! Please check your email to verify your account.', 'green');
+        } else {
+          showMsg(data.error || 'Signup failed.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      form.querySelector('button[type="submit"]').disabled = false;
+    });
+
+    document.getElementById('signInForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const form = e.target;
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      form.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Signing in...', 'green');
+      try {
+        const res = await fetch('http://localhost:3000/api/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('Signed in successfully!', 'green');
+          setTimeout(function() { window.location.href = 'index.html'; }, 1000);
+        } else {
+          showMsg(data.error || 'Sign in failed.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      form.querySelector('button[type="submit"]').disabled = false;
+    });
+    // Helper to set background and blobs for light/dark mode
+    function setBackgroundByTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const body = document.getElementById('main-body');
+      const blobs = document.getElementById('bg-blobs');
+      if (isDark) {
+        body.style.background = 'linear-gradient(135deg, #232946 0%, #181f2a 60%, #2d3250 100%)';
+        blobs.innerHTML = `
+          <div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#6a8caf] opacity-20 blur-3xl animate-[blob_20s_infinite]"></div>
+          <div class="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[#b8a1c5] opacity-20 blur-3xl animate-[blob_20s_infinite]"></div>
+          <div class="absolute top-1/3 left-1/2 -translate-x-1/2 h-40 w-40 rounded-full bg-[#232946]/40 opacity-40 blur-2xl"></div>
+        `;
+      } else {
+        body.style.background = 'linear-gradient(135deg, #a3d5f1 0%, #f0f8ff 60%, #f5c8d1 100%)';
+        blobs.innerHTML = `
+          <div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[var(--pastel-blue)] opacity-30 blur-3xl animate-[blob_20s_infinite]"></div>
+          <div class="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[var(--pastel-pink)] opacity-30 blur-3xl animate-[blob_20s_infinite]"></div>
+          <div class="absolute top-1/3 left-1/2 -translate-x-1/2 h-40 w-40 rounded-full bg-white/40 opacity-40 blur-2xl"></div>
+        `;
+      }
+    }
+    // Initial set
+    setBackgroundByTheme();
+    // Also update on theme toggle
+    const themeToggleBtn2 = document.querySelector('button[onclick="toggleTheme()"]');
+    themeToggleBtn2.addEventListener('click', setBackgroundByTheme);
+    // If theme is changed elsewhere (e.g. system), listen for class changes
+    const observer = new MutationObserver(setBackgroundByTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // 3D floating/glow effect on form box
+    const card = document.getElementById('auth-card');
+    let cardRect = null;
+    function handleMouseMove(e) {
+      if (!cardRect) cardRect = card.getBoundingClientRect();
+      const x = e.clientX - cardRect.left;
+      const y = e.clientY - cardRect.top;
+      const cx = cardRect.width / 2;
+      const cy = cardRect.height / 2;
+      const dx = (x - cx) / cx;
+      const dy = (y - cy) / cy;
+      // 3D tilt and glow
+      card.style.transform = `rotateY(${dx * 10}deg) rotateX(${-dy * 10}deg) scale(1.03)`;
+      card.style.boxShadow = `0 8px 32px 0 rgba(71,180,234,0.18), 0 1.5px 8px 0 rgba(245,200,209,0.13), 0 0 40px 5px rgba(71,180,234,${0.25 + Math.abs(dx + dy) * 0.15})`;
+    }
+    function handleMouseLeave() {
+      card.style.transform = '';
+      card.style.boxShadow = '0 8px 32px 0 rgba(71,180,234,0.12), 0 1.5px 8px 0 rgba(245,200,209,0.10)';
+      cardRect = null;
+    }
+    card.addEventListener('mousemove', handleMouseMove);
+    card.addEventListener('mouseleave', handleMouseLeave);
+    // Change form box background on theme
+    function setCardBgByTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        card.style.background = 'rgba(17,24,39,0.7)';
+        card.style.borderColor = 'var(--brand-color)';
+      } else {
+        card.style.background = 'rgba(234,246,251,0.95)'; // pastel blue
+        card.style.borderColor = 'var(--pastel-blue)';
+      }
+    }
+    setCardBgByTheme();
+    // Update on theme toggle
+    themeToggleBtn2.addEventListener('click', setCardBgByTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  </script>
+</body>
+</html> 
