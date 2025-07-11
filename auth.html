@@ -12,14 +12,26 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <style type="text/tailwindcss">
     :root {
-      --brand-color: #47b4ea;
-      --background: #f8fafc;
-      --card-bg: #fff;
-      --input-bg: #f4f6fa;
-      --input-border: #e5e7eb;
-      --input-focus: #47b4ea;
-      --text-main: #1f2937;
-      --text-secondary: #6b7280;
+      --brand-color: #6EC1E4; /* pastel blue */
+      --brand-accent: #F7C8E0; /* pastel pink */
+      --background: #F9FAFB; /* very light gray */
+      --card-bg: #FFFFFF; /* white */
+      --input-bg: #F3F6F9; /* very light blue-gray */
+      --input-border: #D1D5DB; /* soft gray */
+      --input-focus: #A78BFA; /* pastel purple */
+      --text-main: #22223B; /* deep blue-gray */
+      --text-secondary: #7B7F9E; /* muted blue-gray */
+    }
+    .dark {
+      --background: #181A20;
+      --card-bg: #23263A;
+      --input-bg: #23263A;
+      --input-border: #3B4252;
+      --input-focus: #A78BFA;
+      --text-main: #F3F6F9;
+      --text-secondary: #A5B4FC;
+      --brand-color: #A78BFA;
+      --brand-accent: #6EC1E4;
     }
     body {
       background: var(--background);
@@ -33,18 +45,19 @@
     #auth-card {
       background: var(--card-bg);
       border-radius: 18px;
-      box-shadow: 0 4px 32px 0 rgba(71,180,234,0.07);
-      border: 1px solid #e5e7eb;
-      padding: 2.5rem 2rem 2rem 2rem;
-      max-width: 370px;
+      box-shadow: 0 6px 32px 0 rgba(71,180,234,0.10);
+      border: 1.5px solid var(--input-border);
+      padding: 3rem 2.5rem 2.5rem 2.5rem;
+      max-width: 420px;
       width: 100%;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      transition: background 0.3s, border 0.3s, color 0.3s;
     }
     .auth-title {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 700;
       color: var(--brand-color);
       margin-bottom: 0.5rem;
@@ -52,7 +65,7 @@
     }
     .auth-desc {
       color: var(--text-secondary);
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       margin-bottom: 1.5rem;
     }
     .form-input {
@@ -60,24 +73,25 @@
       border: 1px solid var(--input-border);
       color: var(--text-main);
       border-radius: 9999px;
-      padding: 0.85rem 1.2rem;
-      font-size: 1rem;
+      padding: 1rem 1.3rem;
+      font-size: 1.08rem;
       margin-bottom: 0.7rem;
       box-shadow: none;
-      transition: border 0.2s;
+      transition: border 0.2s, background 0.3s, color 0.3s;
     }
     .form-input:focus {
       border-color: var(--input-focus);
       outline: none;
       background: #fff;
+      color: var(--text-main);
     }
     .auth-btn {
       background: var(--brand-color);
       color: #fff;
       border: none;
       border-radius: 9999px;
-      padding: 0.85rem 0;
-      font-size: 1.08rem;
+      padding: 1rem 0;
+      font-size: 1.12rem;
       font-weight: 600;
       width: 100%;
       margin-top: 0.2rem;
@@ -95,7 +109,7 @@
       background: none;
       border: none;
       padding: 0;
-      font-size: 0.98rem;
+      font-size: 1rem;
       cursor: pointer;
       margin-top: 0.2rem;
     }
@@ -108,10 +122,10 @@
     .auth-tab {
       background: none;
       border: none;
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       font-weight: 600;
       color: var(--text-secondary);
-      padding: 0.5rem 1.2rem;
+      padding: 0.6rem 1.5rem;
       border-radius: 9999px;
       cursor: pointer;
       transition: background 0.18s, color 0.18s;
@@ -122,21 +136,28 @@
     }
     #auth-success-message {
       margin-top: 0.7rem;
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       text-align: center;
     }
     footer {
       margin-top: 2.5rem;
       color: var(--text-secondary);
-      font-size: 0.98rem;
+      font-size: 1rem;
       text-align: center;
     }
-    @media (max-width: 500px) {
+    @media (max-width: 700px) {
       #auth-card {
         padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+        max-width: 98vw;
       }
       .auth-title {
         font-size: 1.4rem;
+      }
+    }
+    @media (min-width: 1000px) {
+      #auth-card {
+        max-width: 480px;
+        padding: 3.5rem 3.5rem 2.5rem 3.5rem;
       }
     }
   </style>
@@ -156,66 +177,97 @@
   </script>
 </head>
 <body id="main-body" class="text-[var(--text-primary)] transition-colors duration-300 min-h-screen" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
-  <main style="width:100vw; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--background);">
-    <div id="auth-card">
-      <div class="auth-title">Code & Caffeine</div>
-      <div class="auth-desc">Sign in or create an account to continue</div>
-      <div class="auth-tabs">
-        <button id="signInTab" class="auth-tab" type="button" data-active="true">Sign In</button>
-        <button id="signUpTab" class="auth-tab" type="button" data-active="false">Sign Up</button>
+  <main style="width:100vw; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--background); position:relative;">
+    <button id="theme-toggle-btn" aria-label="Toggle theme" style="position:fixed;top:32px;right:32px;z-index:50;background:none;border:none;outline:none;cursor:pointer;padding:8px;border-radius:50%;transition:background 0.15s;">
+      <svg id="theme-toggle-dark-icon" class="hidden" width="26" height="26" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+      <svg id="theme-toggle-light-icon" class="hidden" width="26" height="26" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4 10a6 6 0 1112 0A6 6 0 014 10z"/></svg>
+    </button>
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--background);position:relative;width:100vw;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100vw;">
+        <div id="auth-card">
+          <div class="auth-title">Code & Caffeine</div>
+          <div class="auth-desc">Sign in or create an account to continue</div>
+          <div class="auth-tabs">
+            <button id="signInTab" class="auth-tab" type="button" data-active="true">Sign In</button>
+            <button id="signUpTab" class="auth-tab" type="button" data-active="false">Sign Up</button>
+          </div>
+          <form id="signInForm" class="flex flex-col gap-4" autocomplete="on">
+            <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign In</button>
+            <button type="button" id="forgotPasswordBtn" class="minimal-link mt-2">Forgot Password?</button>
+          </form>
+          <form id="signUpForm" class="flex flex-col gap-4 hidden" autocomplete="on">
+            <input name="name" type="text" required placeholder="Name" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <input name="confirm-password" type="password" required placeholder="Confirm Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign Up</button>
+          </form>
+          <form id="otpVerifyForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+            <input name="email" type="hidden" />
+            <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
+            <button type="button" id="resendOtpBtn" class="text-sm text-[var(--brand-color)] hover:underline">Resend OTP</button>
+          </form>
+          <form id="forgotPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+            <input name="email" type="email" required placeholder="Enter your email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Send OTP</button>
+          </form>
+          <form id="forgotOtpForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+            <input name="email" type="hidden" />
+            <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
+          </form>
+          <form id="resetPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+            <input name="email" type="hidden" />
+            <input name="otp" type="hidden" />
+            <input name="newPassword" type="password" required placeholder="Enter new password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+            <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Reset Password</button>
+          </form>
+          <div id="auth-success-message" class="hidden text-green-600">Success!</div>
+        </div>
       </div>
-      <form id="signInForm" class="flex flex-col gap-4" autocomplete="on">
-        <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign In</button>
-        <button type="button" id="forgotPasswordBtn" class="minimal-link mt-2">Forgot Password?</button>
-      </form>
-      <form id="signUpForm" class="flex flex-col gap-4 hidden" autocomplete="on">
-        <input name="name" type="text" required placeholder="Name" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <input name="confirm-password" type="password" required placeholder="Confirm Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign Up</button>
-      </form>
-      <form id="otpVerifyForm" class="flex flex-col gap-4 hidden" autocomplete="off">
-        <input name="email" type="hidden" />
-        <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
-        <button type="button" id="resendOtpBtn" class="text-sm text-[var(--brand-color)] hover:underline">Resend OTP</button>
-      </form>
-      <form id="forgotPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
-        <input name="email" type="email" required placeholder="Enter your email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Send OTP</button>
-      </form>
-      <form id="forgotOtpForm" class="flex flex-col gap-4 hidden" autocomplete="off">
-        <input name="email" type="hidden" />
-        <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
-      </form>
-      <form id="resetPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
-        <input name="email" type="hidden" />
-        <input name="otp" type="hidden" />
-        <input name="newPassword" type="password" required placeholder="Enter new password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
-        <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Reset Password</button>
-      </form>
-      <div id="auth-success-message" class="hidden text-green-600">Success!</div>
+      <footer style="width:100vw;text-align:center;margin-top:2.5rem;color:var(--text-secondary);font-size:0.98rem;">
+        Built with ☕ by <span style="font-weight:500; color:var(--text-main);">Harshil Mittal</span>
+      </footer>
     </div>
-    <footer>
-      Built with ☕ by <span style="font-weight:500; color:var(--text-main);">Harshil Mittal</span>
-    </footer>
   </main>
   <script>
+    // --- Theme toggle logic ---
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
     const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      themeToggleLightIcon.classList.remove('hidden');
-    } else {
-      themeToggleDarkIcon.classList.remove('hidden');
+    function setThemeIcons() {
+      if (document.documentElement.classList.contains('dark')) {
+        themeToggleLightIcon.classList.remove('hidden');
+        themeToggleDarkIcon.classList.add('hidden');
+      } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+        themeToggleLightIcon.classList.add('hidden');
+      }
     }
-    const themeToggleBtn = document.querySelector('button[onclick="toggleTheme()"]');
+    function setThemeVars() {
+      document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--background');
+    }
+    function applyThemeFromStorage() {
+      if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+      setThemeIcons();
+      setThemeVars();
+    }
+    applyThemeFromStorage();
     themeToggleBtn.addEventListener('click', function () {
-      themeToggleDarkIcon.classList.toggle('hidden');
-      themeToggleLightIcon.classList.toggle('hidden');
+      const isDark = document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light', !isDark);
+      localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+      setThemeIcons();
+      setThemeVars();
     });
     // Tab toggle logic
     const signInTab = document.getElementById('signInTab');
