@@ -15,10 +15,10 @@
       --brand-color: #47b4ea;
       --pastel-blue: #a3d5f1;
       --pastel-pink: #f5c8d1;
-      --light-background: #f0f8ff;
+      --light-background: #f8fafc;
       --light-text-primary: #1f2937;
-      --light-text-secondary: #4b5563;
-      --dark-background: #111827;
+      --light-text-secondary: #6b7280;
+      --dark-background: #181f2a;
       --dark-text-primary: #f9fafb;
       --dark-text-secondary: #9ca3af;
     }
@@ -40,10 +40,43 @@
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
-      @keyframes blob {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(20px, -10px) scale(1.05); }
-      }
+    }
+    body {
+      background: var(--background-color);
+      color: var(--text-primary);
+    }
+    #auth-card {
+      background: var(--background-color);
+      border: 1px solid var(--pastel-blue);
+      box-shadow: none !important;
+      transition: background 0.3s, border 0.3s;
+    }
+    .form-input {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      color: var(--text-primary);
+      box-shadow: none;
+      transition: border 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--brand-color);
+      outline: none;
+    }
+    button {
+      box-shadow: none !important;
+      outline: none;
+    }
+    .rounded-full {
+      border-radius: 9999px;
+    }
+    .minimal-link {
+      color: var(--brand-color);
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.95rem;
+      cursor: pointer;
     }
   </style>
   <script>
@@ -72,7 +105,7 @@
     </header>
     <div id="bg-blobs" class="absolute inset-0 z-0 pointer-events-none"></div>
     <div class="relative z-10 flex grow flex-col items-center justify-center px-4 py-10">
-      <div id="auth-card" class="w-full max-w-md bg-[#eaf6fb]/90 dark:bg-gray-900/70 rounded-2xl shadow-2xl p-8 backdrop-blur-2xl border border-[var(--pastel-blue)] dark:border-[var(--brand-color)] transition-all duration-300 will-change-transform" style="box-shadow: 0 8px 32px 0 rgba(71,180,234,0.12), 0 1.5px 8px 0 rgba(245,200,209,0.10);">
+      <div id="auth-card" class="w-full max-w-md rounded-2xl p-8 border transition-all duration-300" style="background: var(--background-color); border: 1px solid var(--pastel-blue);">
         <div class="flex justify-center mb-6">
           <button id="signInTab" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200 text-[var(--text-primary)] border-b-2 border-[var(--brand-color)] bg-white dark:bg-gray-900 shadow-sm shadow-[var(--brand-color)]/10 data-[active=true]:bg-[var(--brand-color)] data-[active=true]:text-white data-[active=true]:border-[var(--brand-color)]" type="button" data-active="true">Sign In</button>
           <button id="signUpTab" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200 text-[var(--text-secondary)] border-b-2 border-transparent bg-white dark:bg-gray-900 hover:bg-[var(--pastel-blue)]/40 hover:text-[var(--brand-color)]" type="button" data-active="false">Sign Up</button>
@@ -81,7 +114,7 @@
           <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign In</button>
-          <button type="button" id="forgotPasswordBtn" class="text-sm text-[var(--brand-color)] hover:underline mt-2">Forgot Password?</button>
+          <button type="button" id="forgotPasswordBtn" class="minimal-link mt-2">Forgot Password?</button>
         </form>
         <form id="signUpForm" class="flex flex-col gap-4 hidden" autocomplete="on">
           <input name="name" type="text" required placeholder="Name" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
@@ -364,6 +397,7 @@
         });
         const data = await res.json();
         if (data.success) {
+          localStorage.setItem('token', data.token); // Save token after login
           showMsg('Signed in successfully!', 'green');
           setTimeout(function() { window.location.href = 'index.html'; }, 1000);
         } else {
@@ -402,42 +436,6 @@
     themeToggleBtn2.addEventListener('click', setBackgroundByTheme);
     // If theme is changed elsewhere (e.g. system), listen for class changes
     const observer = new MutationObserver(setBackgroundByTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    // 3D floating/glow effect on form box
-    const card = document.getElementById('auth-card');
-    let cardRect = null;
-    function handleMouseMove(e) {
-      if (!cardRect) cardRect = card.getBoundingClientRect();
-      const x = e.clientX - cardRect.left;
-      const y = e.clientY - cardRect.top;
-      const cx = cardRect.width / 2;
-      const cy = cardRect.height / 2;
-      const dx = (x - cx) / cx;
-      const dy = (y - cy) / cy;
-      // 3D tilt and glow
-      card.style.transform = `rotateY(${dx * 10}deg) rotateX(${-dy * 10}deg) scale(1.03)`;
-      card.style.boxShadow = `0 8px 32px 0 rgba(71,180,234,0.18), 0 1.5px 8px 0 rgba(245,200,209,0.13), 0 0 40px 5px rgba(71,180,234,${0.25 + Math.abs(dx + dy) * 0.15})`;
-    }
-    function handleMouseLeave() {
-      card.style.transform = '';
-      card.style.boxShadow = '0 8px 32px 0 rgba(71,180,234,0.12), 0 1.5px 8px 0 rgba(245,200,209,0.10)';
-      cardRect = null;
-    }
-    card.addEventListener('mousemove', handleMouseMove);
-    card.addEventListener('mouseleave', handleMouseLeave);
-    // Change form box background on theme
-    function setCardBgByTheme() {
-      if (document.documentElement.classList.contains('dark')) {
-        card.style.background = 'rgba(17,24,39,0.7)';
-        card.style.borderColor = 'var(--brand-color)';
-      } else {
-        card.style.background = 'rgba(234,246,251,0.95)'; // pastel blue
-        card.style.borderColor = 'var(--pastel-blue)';
-      }
-    }
-    setCardBgByTheme();
-    // Update on theme toggle
-    themeToggleBtn2.addEventListener('click', setCardBgByTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>

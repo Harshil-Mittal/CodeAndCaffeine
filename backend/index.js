@@ -47,10 +47,30 @@ function sendOTPEmail(email, otp, purpose = 'verify') {
   let subject, html;
   if (purpose === 'verify') {
     subject = 'Verify your email';
-    html = `<p>Your Code and Caffeine verification OTP is: <b>${otp}</b></p>`;
+    html = `
+      <div style="font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif; background: #f8fafc; padding: 32px 0;">
+        <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(71,180,234,0.08); border: 1px solid #e5e7eb; padding: 32px 24px;">
+          <h2 style="color: #47b4ea; margin-bottom: 16px; font-size: 1.5rem;">Code & Caffeine</h2>
+          <p style="color: #22223b; font-size: 1.1rem; margin-bottom: 18px;">Your verification code is:</p>
+          <div style="font-size: 2.2rem; font-weight: bold; letter-spacing: 0.2em; color: #47b4ea; margin-bottom: 18px;">${otp}</div>
+          <p style="color: #6b7280; font-size: 1rem; margin-bottom: 12px;">Enter this code in the app to verify your email address. This code will expire in 15 minutes.</p>
+          <div style="margin-top: 24px; color: #b0b0b0; font-size: 0.95rem;">If you did not request this, you can ignore this email.</div>
+        </div>
+      </div>
+    `;
   } else {
     subject = 'Password Reset OTP';
-    html = `<p>Your Code and Caffeine password reset OTP is: <b>${otp}</b></p>`;
+    html = `
+      <div style="font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif; background: #f8fafc; padding: 32px 0;">
+        <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(71,180,234,0.08); border: 1px solid #e5e7eb; padding: 32px 24px;">
+          <h2 style="color: #47b4ea; margin-bottom: 16px; font-size: 1.5rem;">Code & Caffeine</h2>
+          <p style="color: #22223b; font-size: 1.1rem; margin-bottom: 18px;">Your password reset code is:</p>
+          <div style="font-size: 2.2rem; font-weight: bold; letter-spacing: 0.2em; color: #47b4ea; margin-bottom: 18px;">${otp}</div>
+          <p style="color: #6b7280; font-size: 1rem; margin-bottom: 12px;">Enter this code in the app to reset your password. This code will expire in 15 minutes.</p>
+          <div style="margin-top: 24px; color: #b0b0b0; font-size: 0.95rem;">If you did not request this, you can ignore this email.</div>
+        </div>
+      </div>
+    `;
   }
   return transporter.sendMail({
     from: `"Code and Caffeine" <${process.env.EMAIL_USER}>`,
