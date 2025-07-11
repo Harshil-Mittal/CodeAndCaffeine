@@ -23,7 +23,8 @@ const db = new sqlite3.Database('./users.db', (err) => {
     email TEXT UNIQUE,
     password TEXT,
     verified INTEGER DEFAULT 0,
-    verification_token TEXT
+    otp TEXT,
+    otp_expiry INTEGER
   )`);
 });
 
@@ -36,54 +37,136 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Helper: send verification email
-function sendVerificationEmail(email, token) {
-  const link = `${BASE_URL}/verify?token=${token}`;
+// Helper: generate OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Helper: send OTP email
+function sendOTPEmail(email, otp, purpose = 'verify') {
+  let subject, html;
+  if (purpose === 'verify') {
+    subject = 'Verify your email';
+    html = `<p>Your Code and Caffeine verification OTP is: <b>${otp}</b></p>`;
+  } else {
+    subject = 'Password Reset OTP';
+    html = `<p>Your Code and Caffeine password reset OTP is: <b>${otp}</b></p>`;
+  }
   return transporter.sendMail({
     from: `"Code and Caffeine" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: 'Verify your email',
-    html: `<p>Click <a href="${link}">here</a> to verify your email for Code and Caffeine.</p>`
+    subject,
+    html
   });
 }
 
-// Signup endpoint
+// Signup endpoint (with OTP)
 app.post('/api/signup', async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'All fields required.' });
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
     if (user) return res.status(400).json({ error: 'Email already registered.' });
     const hash = await bcrypt.hash(password, 10);
-    const verification_token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1d' });
-    db.run('INSERT INTO users (name, email, password, verification_token) VALUES (?, ?, ?, ?)', [name, email, hash, verification_token], async function(err) {
+    const otp = generateOTP();
+    const otp_expiry = Date.now() + 15 * 60 * 1000; // 15 min
+    db.run('INSERT INTO users (name, email, password, otp, otp_expiry) VALUES (?, ?, ?, ?, ?)', [name, email, hash, otp, otp_expiry], async function(err) {
       if (err) return res.status(500).json({ error: 'Database error.' });
       try {
-        await sendVerificationEmail(email, verification_token);
-        res.json({ success: true, message: 'Signup successful. Please check your email to verify your account.' });
+        await sendOTPEmail(email, otp, 'verify');
+        res.json({ success: true, message: 'Signup successful. Please check your email for the OTP to verify your account.' });
       } catch (e) {
-        res.status(500).json({ error: 'Failed to send verification email.' });
+        res.status(500).json({ error: 'Failed to send OTP email.' });
       }
     });
   });
 });
 
-// Email verification endpoint
-app.get('/verify', (req, res) => {
-  const { token } = req.query;
-  if (!token) return res.status(400).send('Invalid verification link.');
-  let email;
-  try {
-    email = jwt.verify(token, JWT_SECRET).email;
-  } catch {
-    return res.status(400).send('Invalid or expired token.');
-  }
-  db.run('UPDATE users SET verified = 1, verification_token = NULL WHERE email = ?', [email], function(err) {
-    if (err || this.changes === 0) return res.status(400).send('Verification failed.');
-    res.send('Email verified! You can now sign in.');
+// Verify OTP endpoint (for email verification)
+app.post('/api/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) return res.status(400).json({ error: 'Email and OTP required.' });
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+    if (!user) return res.status(400).json({ error: 'User not found.' });
+    if (user.verified) return res.status(400).json({ error: 'Already verified.' });
+    if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP.' });
+    if (Date.now() > user.otp_expiry) return res.status(400).json({ error: 'OTP expired.' });
+    db.run('UPDATE users SET verified = 1, otp = NULL, otp_expiry = NULL WHERE email = ?', [email], function(err) {
+      if (err) return res.status(500).json({ error: 'Database error.' });
+      res.json({ success: true, message: 'Email verified! You can now sign in.' });
+    });
   });
 });
 
-// Signin endpoint
+// Resend OTP endpoint (for verification)
+app.post('/api/resend-otp', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required.' });
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    if (!user) return res.status(400).json({ error: 'User not found.' });
+    if (user.verified) return res.status(400).json({ error: 'Already verified.' });
+    const otp = generateOTP();
+    const otp_expiry = Date.now() + 15 * 60 * 1000;
+    db.run('UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?', [otp, otp_expiry, email], async function(err) {
+      if (err) return res.status(500).json({ error: 'Database error.' });
+      try {
+        await sendOTPEmail(email, otp, 'verify');
+        res.json({ success: true, message: 'OTP resent.' });
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to send OTP email.' });
+      }
+    });
+  });
+});
+
+// Forgot password: request OTP
+app.post('/api/request-reset', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required.' });
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    if (!user) return res.status(400).json({ error: 'User not found.' });
+    const otp = generateOTP();
+    const otp_expiry = Date.now() + 15 * 60 * 1000;
+    db.run('UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?', [otp, otp_expiry, email], async function(err) {
+      if (err) return res.status(500).json({ error: 'Database error.' });
+      try {
+        await sendOTPEmail(email, otp, 'reset');
+        res.json({ success: true, message: 'OTP sent to your email.' });
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to send OTP email.' });
+      }
+    });
+  });
+});
+
+// Forgot password: verify OTP
+app.post('/api/verify-reset-otp', (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) return res.status(400).json({ error: 'Email and OTP required.' });
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+    if (!user) return res.status(400).json({ error: 'User not found.' });
+    if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP.' });
+    if (Date.now() > user.otp_expiry) return res.status(400).json({ error: 'OTP expired.' });
+    res.json({ success: true, message: 'OTP verified.' });
+  });
+});
+
+// Forgot password: reset password
+app.post('/api/reset-password', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) return res.status(400).json({ error: 'All fields required.' });
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    if (!user) return res.status(400).json({ error: 'User not found.' });
+    if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP.' });
+    if (Date.now() > user.otp_expiry) return res.status(400).json({ error: 'OTP expired.' });
+    const hash = await bcrypt.hash(newPassword, 10);
+    db.run('UPDATE users SET password = ?, otp = NULL, otp_expiry = NULL WHERE email = ?', [hash, email], function(err) {
+      if (err) return res.status(500).json({ error: 'Database error.' });
+      res.json({ success: true, message: 'Password reset successful.' });
+    });
+  });
+});
+
+// Signin endpoint (unchanged)
 app.post('/api/signin', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'All fields required.' });

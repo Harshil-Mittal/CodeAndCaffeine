@@ -81,6 +81,7 @@
           <input name="email" type="email" required placeholder="Email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign In</button>
+          <button type="button" id="forgotPasswordBtn" class="text-sm text-[var(--brand-color)] hover:underline mt-2">Forgot Password?</button>
         </form>
         <form id="signUpForm" class="flex flex-col gap-4 hidden" autocomplete="on">
           <input name="name" type="text" required placeholder="Name" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
@@ -88,6 +89,27 @@
           <input name="password" type="password" required placeholder="Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <input name="confirm-password" type="password" required placeholder="Confirm Password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
           <button type="submit" class="mt-2 rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Sign Up</button>
+        </form>
+        <form id="otpVerifyForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+          <input name="email" type="hidden" />
+          <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
+          <button type="button" id="resendOtpBtn" class="text-sm text-[var(--brand-color)] hover:underline">Resend OTP</button>
+        </form>
+        <form id="forgotPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+          <input name="email" type="email" required placeholder="Enter your email" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Send OTP</button>
+        </form>
+        <form id="forgotOtpForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+          <input name="email" type="hidden" />
+          <input name="otp" type="text" required placeholder="Enter OTP" maxlength="6" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Verify OTP</button>
+        </form>
+        <form id="resetPasswordForm" class="flex flex-col gap-4 hidden" autocomplete="off">
+          <input name="email" type="hidden" />
+          <input name="otp" type="hidden" />
+          <input name="newPassword" type="password" required placeholder="Enter new password" class="form-input w-full rounded-full border border-gray-300 bg-white/80 py-3 pl-5 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm focus:border-[var(--brand-color)] focus:ring-1 focus:ring-[var(--brand-color)] backdrop-blur-sm" />
+          <button type="submit" class="rounded-full bg-[var(--brand-color)] px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">Reset Password</button>
         </form>
         <div id="auth-success-message" class="hidden mt-4 text-green-600 text-center">Success!</div>
       </div>
@@ -144,7 +166,16 @@
     }
     function clearMsg() { successMsg.classList.add('hidden'); }
 
-    document.getElementById('signUpForm').addEventListener('submit', async function (e) {
+    // --- OTP and Forgot Password Logic ---
+    // Show OTP form after signup
+    const otpVerifyForm = document.getElementById('otpVerifyForm');
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const forgotOtpForm = document.getElementById('forgotOtpForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+
+    signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       clearMsg();
       const form = e.target;
@@ -166,7 +197,10 @@
         });
         const data = await res.json();
         if (data.success) {
-          showMsg('Signup successful! Please check your email to verify your account.', 'green');
+          showMsg('Signup successful! Please check your email for the OTP.', 'green');
+          signUpForm.classList.add('hidden');
+          otpVerifyForm.classList.remove('hidden');
+          otpVerifyForm.email.value = email;
         } else {
           showMsg(data.error || 'Signup failed.', 'red');
         }
@@ -174,6 +208,144 @@
         showMsg('Network error. Try again.', 'red');
       }
       form.querySelector('button[type="submit"]').disabled = false;
+    });
+
+    otpVerifyForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const email = otpVerifyForm.email.value;
+      const otp = otpVerifyForm.otp.value.trim();
+      otpVerifyForm.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Verifying OTP...', 'green');
+      try {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('Email verified! You can now sign in.', 'green');
+          otpVerifyForm.classList.add('hidden');
+          signInForm.classList.remove('hidden');
+        } else {
+          showMsg(data.error || 'OTP verification failed.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      otpVerifyForm.querySelector('button[type="submit"]').disabled = false;
+    });
+
+    resendOtpBtn.addEventListener('click', async function () {
+      clearMsg();
+      const email = otpVerifyForm.email.value;
+      showMsg('Resending OTP...', 'green');
+      try {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('OTP resent to your email.', 'green');
+        } else {
+          showMsg(data.error || 'Failed to resend OTP.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+    });
+
+    // Forgot Password Flow
+    forgotPasswordBtn.addEventListener('click', function () {
+      signInForm.classList.add('hidden');
+      forgotPasswordForm.classList.remove('hidden');
+    });
+
+    forgotPasswordForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const email = forgotPasswordForm.email.value.trim();
+      forgotPasswordForm.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Sending OTP...', 'green');
+      try {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/request-reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('OTP sent to your email.', 'green');
+          forgotPasswordForm.classList.add('hidden');
+          forgotOtpForm.classList.remove('hidden');
+          forgotOtpForm.email.value = email;
+        } else {
+          showMsg(data.error || 'Failed to send OTP.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      forgotPasswordForm.querySelector('button[type="submit"]').disabled = false;
+    });
+
+    forgotOtpForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const email = forgotOtpForm.email.value;
+      const otp = forgotOtpForm.otp.value.trim();
+      forgotOtpForm.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Verifying OTP...', 'green');
+      try {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/verify-reset-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('OTP verified. Please enter your new password.', 'green');
+          forgotOtpForm.classList.add('hidden');
+          resetPasswordForm.classList.remove('hidden');
+          resetPasswordForm.email.value = email;
+          resetPasswordForm.otp.value = otp;
+        } else {
+          showMsg(data.error || 'OTP verification failed.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      forgotOtpForm.querySelector('button[type="submit"]').disabled = false;
+    });
+
+    resetPasswordForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMsg();
+      const email = resetPasswordForm.email.value;
+      const otp = resetPasswordForm.otp.value;
+      const newPassword = resetPasswordForm.newPassword.value;
+      resetPasswordForm.querySelector('button[type="submit"]').disabled = true;
+      showMsg('Resetting password...', 'green');
+      try {
+        const res = await fetch('https://codeandcaffeine.onrender.com/api/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, newPassword })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('Password reset successful! You can now sign in.', 'green');
+          resetPasswordForm.classList.add('hidden');
+          signInForm.classList.remove('hidden');
+        } else {
+          showMsg(data.error || 'Password reset failed.', 'red');
+        }
+      } catch {
+        showMsg('Network error. Try again.', 'red');
+      }
+      resetPasswordForm.querySelector('button[type="submit"]').disabled = false;
     });
 
     document.getElementById('signInForm').addEventListener('submit', async function (e) {
