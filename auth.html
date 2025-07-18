@@ -329,6 +329,12 @@
     const signUpTab = document.getElementById('signUpTab');
     const signInForm = document.getElementById('signInForm');
     const signUpForm = document.getElementById('signUpForm');
+    const otpVerifyForm = document.getElementById('otpVerifyForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const forgotOtpForm = document.getElementById('forgotOtpForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+
     signInTab.addEventListener('click', function () {
       signInTab.classList.add('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
       signInTab.classList.remove('text-[var(--text-secondary)]', 'bg-white');
@@ -338,6 +344,10 @@
       signUpTab.setAttribute('data-active', 'false');
       signInForm.classList.remove('hidden');
       signUpForm.classList.add('hidden');
+      otpVerifyForm.classList.add('hidden');
+      forgotPasswordForm.classList.add('hidden');
+      forgotOtpForm.classList.add('hidden');
+      resetPasswordForm.classList.add('hidden');
     });
     signUpTab.addEventListener('click', function () {
       signUpTab.classList.add('text-white', 'bg-[var(--brand-color)]', 'border-[var(--brand-color)]');
@@ -348,6 +358,10 @@
       signInTab.setAttribute('data-active', 'false');
       signUpForm.classList.remove('hidden');
       signInForm.classList.add('hidden');
+      otpVerifyForm.classList.add('hidden');
+      forgotPasswordForm.classList.add('hidden');
+      forgotOtpForm.classList.add('hidden');
+      resetPasswordForm.classList.add('hidden');
     });
     // Success message on submit
     const successMsg = document.getElementById('auth-success-message');
@@ -361,13 +375,6 @@
 
     // --- OTP and Forgot Password Logic ---
     // Show OTP form after signup
-    const otpVerifyForm = document.getElementById('otpVerifyForm');
-    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-    const forgotOtpForm = document.getElementById('forgotOtpForm');
-    const resetPasswordForm = document.getElementById('resetPasswordForm');
-    const resendOtpBtn = document.getElementById('resendOtpBtn');
-
     signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       clearMsg();
