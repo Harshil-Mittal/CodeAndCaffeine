@@ -12,52 +12,56 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <style type="text/tailwindcss">
     :root {
-      --brand-color: #6EC1E4; /* pastel blue */
-      --brand-accent: #F7C8E0; /* pastel pink */
-      --background: #F9FAFB; /* very light gray */
-      --card-bg: #FFFFFF; /* white */
-      --input-bg: #F3F6F9; /* very light blue-gray */
-      --input-border: #D1D5DB; /* soft gray */
-      --input-focus: #A78BFA; /* pastel purple */
-      --text-main: #22223B; /* deep blue-gray */
-      --text-secondary: #7B7F9E; /* muted blue-gray */
+      --brand-color: #47b4ea;
+      --pastel-blue: #a3d5f1;
+      --pastel-pink: #f5c8d1;
+      --light-background: #f0f8ff;
+      --light-text-primary: #1f2937;
+      --light-text-secondary: #4b5563;
+      --dark-background: #111827;
+      --dark-text-primary: #f9fafb;
+      --dark-text-secondary: #9ca3af;
     }
     .dark {
-      --background: #181A20;
-      --card-bg: #23263A;
-      --input-bg: #23263A;
-      --input-border: #3B4252;
-      --input-focus: #A78BFA;
-      --text-main: #F3F6F9;
-      --text-secondary: #A5B4FC;
-      --brand-color: #A78BFA;
-      --brand-accent: #6EC1E4;
+      --background-color: var(--dark-background);
+      --text-primary: var(--dark-text-primary);
+      --text-secondary: var(--dark-text-secondary);
+    }
+    .light {
+      --background-color: var(--light-background);
+      --text-primary: var(--light-text-primary);
+      --text-secondary: var(--light-text-secondary);
     }
     body {
-      background: var(--background);
-      color: var(--text-main);
-      font-family: 'Inter', 'Plus Jakarta Sans', 'Noto Sans', 'Segoe UI', Arial, sans-serif;
+      background: var(--background-color);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', 'Noto Sans', 'Segoe UI', Arial, sans-serif;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: 0;
+    }
+    #bg-blobs {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
     }
     #auth-card {
-      background: var(--card-bg);
-      border-radius: 18px;
-      box-shadow: 0 6px 32px 0 rgba(71,180,234,0.10);
-      border: 1.5px solid var(--input-border);
-      padding: 3rem 2.5rem 2.5rem 2.5rem;
-      max-width: 420px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px 0 rgba(71,180,234,0.12), 0 1.5px 8px 0 rgba(245,200,209,0.10);
+      max-width: 400px;
       width: 100%;
       margin: 0 auto;
+      padding: 2.5rem 2rem 2rem 2rem;
+      position: relative;
+      z-index: 10;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      transition: background 0.3s, border 0.3s, color 0.3s;
+      transition: background 0.3s, box-shadow 0.3s;
     }
     .auth-title {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 700;
       color: var(--brand-color);
       margin-bottom: 0.5rem;
@@ -69,9 +73,9 @@
       margin-bottom: 1.5rem;
     }
     .form-input {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      color: var(--text-main);
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      color: var(--text-primary);
       border-radius: 9999px;
       padding: 1rem 1.3rem;
       font-size: 1.08rem;
@@ -80,7 +84,7 @@
       transition: border 0.2s, background 0.3s, color 0.3s;
     }
     .form-input:focus {
-      border-color: var(--input-focus);
+      border-color: var(--brand-color);
       outline: none;
       background: #fff;
       color: var(--text-main);
@@ -177,14 +181,17 @@
   </script>
 </head>
 <body id="main-body" class="text-[var(--text-primary)] transition-colors duration-300 min-h-screen" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
-  <main style="width:100vw; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--background); position:relative;">
+  <div style="min-height:100vh;width:100vw;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <div id="bg-blobs">
+      <div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[var(--pastel-blue)] opacity-30 blur-3xl dark:opacity-20 animate-[blob_20s_infinite]"></div>
+      <div class="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[var(--pastel-pink)] opacity-30 blur-3xl dark:opacity-20 animate-[blob_20s_infinite]"></div>
+    </div>
     <button id="theme-toggle-btn" aria-label="Toggle theme" style="position:fixed;top:32px;right:32px;z-index:50;background:none;border:none;outline:none;cursor:pointer;padding:8px;border-radius:50%;transition:background 0.15s;">
       <svg id="theme-toggle-dark-icon" class="hidden" width="26" height="26" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
       <svg id="theme-toggle-light-icon" class="hidden" width="26" height="26" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4 10a6 6 0 1112 0A6 6 0 014 10z"/></svg>
     </button>
-    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--background);position:relative;width:100vw;">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100vw;">
-        <div id="auth-card">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100vw;min-height:80vh;z-index:10;">
+      <div id="auth-card">
           <div class="auth-title">Code & Caffeine</div>
           <div class="auth-desc">Sign in or create an account to continue</div>
           <div class="auth-tabs">
@@ -228,11 +235,11 @@
           <div id="auth-success-message" class="hidden text-green-600">Success!</div>
         </div>
       </div>
-      <footer style="width:100vw;text-align:center;margin-top:2.5rem;color:var(--text-secondary);font-size:0.98rem;">
-        Built with ☕ by <span style="font-weight:500; color:var(--text-main);">Harshil Mittal</span>
+      <footer style="width:100vw;text-align:center;margin-top:2.5rem;color:var(--text-secondary);font-size:1rem;z-index:10;">
+        Built with ☕ by <span style="font-weight:500; color:var(--text-primary);">Harshil Mittal</span>
       </footer>
     </div>
-  </main>
+  </div>
   <script>
     // --- Theme toggle logic ---
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -248,7 +255,7 @@
       }
     }
     function setThemeVars() {
-      document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--background');
+      document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
     }
     function applyThemeFromStorage() {
       if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -503,8 +510,9 @@
         const data = await res.json();
         if (data.success) {
           localStorage.setItem('token', data.token); // Save token after login
+          localStorage.setItem('name', data.name || ''); // Save user name for greeting
           showMsg('Signed in successfully!', 'green');
-          setTimeout(function() { window.location.href = 'index.html'; }, 1000);
+          setTimeout(function() { window.location.href = 'planmysemester.html'; }, 1000);
         } else {
           showMsg(data.error || 'Sign in failed.', 'red');
         }

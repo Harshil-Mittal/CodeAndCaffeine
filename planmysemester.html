@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanMySemester - AI Academic Assistant for India</title>
+    <!-- Chosen Palette: Midnight Blue & Neon -->
+    <!-- Application Structure Plan: Retained the top-down narrative structure as it's effective for a product showcase. Enhanced with a dedicated "Privacy & Compliance" section to highlight the DPDP Act adherence, a key trust factor from the source report. The interactive features in "The Solution" section are now more detailed to better demonstrate the app's capabilities. The overall aesthetic is shifted to a minimal, professional dark mode to be more visually appealing and modern. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core App Features -> Goal: Organize & Explain -> Viz: Interactive Tabbed Interface -> Interaction: Click to switch between feature sets -> Justification: The tabbed view remains the best way to present distinct features. Content within tabs is now more detailed, referencing NLP concepts and goal-seeking features from the source report. -> Library/Method: HTML/Tailwind + JS.
+        - Report Info: Indian Grade Tracking -> Goal: Compare & Demonstrate -> Viz: Dynamic Doughnut Chart (Dark Theme) -> Interaction: User inputs marks, chart and a new "goal-seeking" text output update in real-time -> Justification: The interactive chart is now paired with a practical goal projection, directly showcasing a key feature from the report. -> Library/Method: Chart.js (Canvas).
+        - Report Info: MVP Roadmap -> Goal: Show change over time -> Viz: Vertical Timeline -> Interaction: Visual progression -> Justification: The timeline is styled for dark mode and descriptions are enriched with technical milestones like IndicBERT integration. -> Library/Method: HTML/CSS/Tailwind.
+        - Report Info: Technology Stack -> Goal: Inform & Build Credibility -> Viz: Structured Grid -> Interaction: None -> Justification: Replaced generic icons with a clear grid listing the actual technologies (React, Django, MongoDB), making the technical foundation more transparent and impressive. -> Library/Method: HTML/Tailwind.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .accent-blue { color: #58a6ff; }
+        .accent-blue-bg { background-color: #58a6ff; }
+        .accent-blue-border { border-color: #58a6ff; }
+        .header-bg { background-color: rgba(13, 17, 23, 0.8); backdrop-filter: blur(8px); }
+        .section-bg { background-color: #161b22; }
+        .card-bg { background-color: #1e242c; }
+        .border-subtle { border-color: #30363d; }
+        .tab-active { 
+            border-bottom: 2px solid #58a6ff;
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            color: #8b949e;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 340px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: #0d1117;
+            border: 3px solid #58a6ff;
+            left: -0.5rem;
+            top: 0.25rem;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="header-bg sticky top-0 z-50 border-b border-subtle">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-white">
+                PlanMySemester
+            </h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#problem" class="tab-inactive hover:accent-blue transition-colors">The Problem</a>
+                <a href="#solution" class="tab-inactive hover:accent-blue transition-colors">Solution</a>
+                <a href="#roadmap" class="tab-inactive hover:accent-blue transition-colors">Roadmap</a>
+                <a href="#privacy" class="tab-inactive hover:accent-blue transition-colors">Privacy</a>
+            </div>
+            <a href="#solution" class="hidden md:block bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Explore Features</a>
+            <span id="welcomeUser" class="ml-4 text-gray-300 font-semibold"></span>
+            <button id="logoutBtn" class="ml-4 bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-24 md:py-40">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold text-white">Academic Planning, Reimagined.</h2>
+                <h3 class="text-xl md:text-2xl mt-4 text-gray-400">The AI-powered assistant for the modern Indian student.</h3>
+                <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-400">
+                    PlanMySemester uses advanced NLP to decode your syllabus and calendar, transforming chaotic documents into a clear, adaptive, and personalized study plan.
+                </p>
+                <div class="mt-10">
+                    <a href="#solution" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/50">See How It Works</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="problem" class="py-20 section-bg border-t border-b border-subtle">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-white">Why is College Planning So Stressful?</h2>
+                    <p class="mt-4 text-lg max-w-2xl mx-auto text-gray-400">Indian students navigate a high-pressure environment of scattered information, complex grading, and a constant search for quality resources.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 mt-12 text-center">
+                    <div class="p-6 card-bg border border-subtle rounded-xl">
+                        <div class="text-4xl">📂</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">Information Overload</h3>
+                        <p class="mt-2 text-gray-400">Syllabi in PDFs, deadlines on WhatsApp, resources on NPTEL. It's a digital mess leading to missed deadlines and anxiety.</p>
+                    </div>
+                    <div class="p-6 card-bg border border-subtle rounded-xl">
+                        <div class="text-4xl">⚖️</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">Opaque Grading</h3>
+                        <p class="mt-2 text-gray-400">Internals, mid-sems, end-sems—each with different weightings. Understanding your actual standing is a constant mental calculation.</p>
+                    </div>
+                    <div class="p-6 card-bg border border-subtle rounded-xl">
+                        <div class="text-4xl">🔎</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">The Resource Hunt</h3>
+                        <p class="mt-2 text-gray-400">Sifting through hours of content to find one relevant, high-quality lecture for a specific syllabus topic is inefficient and exhausting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-white">The All-in-One Solution</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-gray-400">PlanMySemester centralizes your entire academic life. Our AI is trained on the nuances of the Indian academic system to build a plan that truly works for you. Click the tabs below to explore the core features.</p>
+                </div>
+
+                <div class="max-w-5xl mx-auto mt-16">
+                    <div class="border-b border-subtle">
+                        <nav id="tabs" class="-mb-px flex justify-center space-x-6 md:space-x-8" aria-label="Tabs">
+                            <button data-tab="plan" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg tab-active">🗓️ Plan</button>
+                            <button data-tab="learn" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg tab-inactive">🧠 Learn</button>
+                            <button data-tab="track" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg tab-inactive">📈 Track</button>
+                        </nav>
+                    </div>
+
+                    <div class="mt-10">
+                        <div id="plan" class="tab-content">
+                            <div class="grid md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <h3 class="font-bold text-2xl text-white">Intelligent Syllabus Parsing</h3>
+                                    <p class="mt-4 text-gray-400">Upload any syllabus or calendar. Our AI uses a custom-trained Named Entity Recognition (NER) model to find every `ASSESSMENT`, `TOPIC`, and `DEADLINE`. It then uses Relation Extraction to link them, building a complete knowledge graph of your course instantly.</p>
+                                    <ul class="mt-4 space-y-3 text-gray-300">
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Handles PDFs, DOCX, and pasted text, including regional languages via IndicBERT.</span></li>
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Generates an editable to-do list and a unified calendar with all tasks.</span></li>
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Automatically schedules study and revision sessions using spaced repetition.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="card-bg p-6 rounded-xl border border-subtle">
+                                    <h4 class="font-semibold text-center mb-4 text-white">Sample Generated Calendar</h4>
+                                    <div class="grid grid-cols-7 gap-1 text-center text-sm text-gray-400">
+                                        <div class="font-bold">S</div><div class="font-bold">M</div><div class="font-bold">T</div><div class="font-bold">W</div><div class="font-bold">T</div><div class="font-bold">F</div><div class="font-bold">S</div>
+                                        <div class="text-gray-600">28</div><div class="text-gray-600">29</div><div class="text-gray-600">30</div><div class="text-gray-600">31</div><div>1</div><div>2</div><div>3</div>
+                                        <div>4</div><div>5</div><div class="relative"><span class="font-bold text-white">6</span><div class="absolute text-xs -bottom-1 left-0 right-0 accent-blue">AI Lab Due</div></div><div>7</div><div>8</div><div>9</div><div>10</div>
+                                        <div>11</div><div>12</div><div>13</div><div>14</div><div class="relative"><span class="font-bold text-white">15</span><div class="absolute text-xs -bottom-1 left-0 right-0 text-green-400">Holiday</div></div><div>16</div><div>17</div>
+                                        <div>18</div><div class="relative"><span class="font-bold text-white">19</span><div class="absolute text-xs -bottom-1 left-0 right-0 text-red-400">Mid-Sem</div></div><div class="relative"><span class="font-bold text-white">20</span><div class="absolute text-xs -bottom-1 left-0 right-0 text-red-400">Mid-Sem</div></div><div>21</div><div>22</div><div>23</div><div>24</div>
+                                        <div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="learn" class="tab-content hidden">
+                           <div class="grid md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <h3 class="font-bold text-2xl text-white">Curated Learning Pathways</h3>
+                                    <p class="mt-4 text-gray-400">For every topic extracted from your syllabus, PlanMySemester queries its curated database of India-centric resources to give you the most relevant study materials, saving you hours of searching.</p>
+                                     <ul class="mt-4 space-y-3 text-gray-300">
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Direct links to NPTEL & SWAYAM lectures mapped to your curriculum.</span></li>
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Video recommendations from trusted Indian YouTube educators.</span></li>
+                                        <li class="flex items-start"><span class="accent-blue font-bold mr-3 mt-1">✓</span><span>Access to relevant articles, notes, and open-source textbooks.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="card-bg p-6 rounded-xl border border-subtle space-y-4">
+                                    <div class="border-b border-subtle pb-3">
+                                        <h4 class="font-semibold text-white">Topic: Asymptotic Analysis</h4>
+                                        <a href="#" class="accent-blue hover:underline">NPTEL: Design and Analysis of Algorithms</a>
+                                        <p class="text-sm text-gray-500">Prof. Madhavan Mukund, CMI</p>
+                                    </div>
+                                    <div class="border-b border-subtle pb-3">
+                                        <h4 class="font-semibold text-white">Topic: React Hooks</h4>
+                                        <a href="#" class="accent-blue hover:underline">YouTube: Akshay Saini - Namaste React</a>
+                                        <p class="text-sm text-gray-500">Community-recommended for practical explanations.</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Topic: Leadership & Motivation</h4>
+                                        <a href="#" class="accent-blue hover:underline">SWAYAM: Principles of Management</a>
+                                        <p class="text-sm text-gray-500">Relevant module for BBA/MBA students.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="track" class="tab-content hidden">
+                           <div class="grid md:grid-cols-2 gap-12 items-center">
+                                <div class="order-2 md:order-1">
+                                    <h3 class="font-bold text-2xl text-white">Adaptive Grade Tracking</h3>
+                                    <p class="mt-4 text-gray-400">Input your grades as you receive them. The app visualizes your real-time standing based on your university's specific weighting scheme and helps you strategize for future exams. Interact with the inputs to see the chart and goal projection update live.</p>
+                                    <div id="grade-inputs" class="mt-6 space-y-4">
+                                        <div>
+                                            <label for="internals" class="font-medium text-gray-300">Internals (20% weight, out of 20)</label>
+                                            <input type="number" id="internals" value="18" max="20" class="w-full mt-1 p-2 border border-subtle rounded-md bg-gray-800 text-white">
+                                        </div>
+                                        <div>
+                                            <label for="midsem" class="font-medium text-gray-300">Mid-Sem (30% weight, out of 30)</label>
+                                            <input type="number" id="midsem" value="25" max="30" class="w-full mt-1 p-2 border border-subtle rounded-md bg-gray-800 text-white">
+                                        </div>
+                                        <div>
+                                            <label for="endsem" class="font-medium text-gray-300">End-Sem (50% weight, out of 50)</label>
+                                            <input type="number" id="endsem" value="40" max="50" class="w-full mt-1 p-2 border border-subtle rounded-md bg-gray-800 text-white">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="order-1 md:order-2">
+                                    <div class="chart-container">
+                                        <canvas id="gradeChart"></canvas>
+                                    </div>
+                                    <p id="totalScore" class="text-center font-bold text-2xl mt-4 text-white"></p>
+                                    <p id="goalSeeker" class="text-center text-md mt-1 accent-blue"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="py-20 section-bg border-t border-b border-subtle">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-white">Product Roadmap</h2>
+                    <p class="mt-4 text-lg max-w-2xl mx-auto text-gray-400">We are building in focused phases to deliver a robust and polished product.</p>
+                </div>
+                <div class="relative max-w-3xl mx-auto">
+                    <div class="absolute left-3 top-0 h-full w-0.5 bg-gray-700"></div>
+                    <div class="relative pl-12 mb-10 timeline-item">
+                        <h3 class="font-bold text-xl text-white">Phase 1: Core Engine (MVP)</h3>
+                        <p class="text-gray-400">Launch with core features: English-only syllabus parsing, calendar generation, and manual grade tracking. Focus on data collection to refine the AI model.</p>
+                    </div>
+                    <div class="relative pl-12 mb-10 timeline-item">
+                        <h3 class="font-bold text-xl text-white">Phase 2: Learning & Language</h3>
+                        <p class="text-gray-400">Integrate the fine-tuned IndicBERT model for regional language support. Roll out the NPTEL/YouTube resource recommendation engine and WhatsApp reminders.</p>
+                    </div>
+                    <div class="relative pl-12 mb-10 timeline-item">
+                        <h3 class="font-bold text-xl text-white">Phase 3: Collaboration & B2B</h3>
+                        <p class="text-gray-400">Introduce peer study group features. Launch the institutional portal with admin dashboards and analytics, initiating pilot programs with partner colleges.</p>
+                    </div>
+                     <div class="relative pl-12 timeline-item">
+                        <h3 class="font-bold text-xl text-white">Phase 4: Personalization at Scale</h3>
+                        <p class="text-gray-400">Implement truly adaptive study plans that adjust based on user performance and feedback. Introduce advanced goal-setting and competitive exam prep modules.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="privacy" class="py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-white">Privacy by Design</h2>
+                    <p class="mt-4 text-lg max-w-2xl mx-auto text-gray-400">Your trust is our foundation. We are built with a privacy-first ethos and full compliance with India's DPDP Act, 2025.</p>
+                </div>
+                 <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto text-center">
+                    <div class="p-6">
+                        <div class="text-4xl">🛡️</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">Data Minimization</h3>
+                        <p class="mt-2 text-gray-400">We only process the academic documents you provide. We will never ask for sensitive personal information like Aadhar or financial details.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-4xl">🔐</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">End-to-End Encryption</h3>
+                        <p class="mt-2 text-gray-400">All your data is encrypted both in transit (using HTTPS/TLS) and at rest in our database. Security is not an afterthought; it's architected in.</p>
+                    </div>
+                     <div class="p-6">
+                        <div class="text-4xl">⚖️</div>
+                        <h3 class="font-semibold text-xl mt-4 text-white">Your Data, Your Rights</h3>
+                        <p class="mt-2 text-gray-400">Our platform provides easy-to-use tools to access, correct, or permanently erase your data, giving you full control as mandated by the DPDP Act.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="tech-stack" class="py-20 section-bg border-t border-b border-subtle">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-white">Our Technology Stack</h2>
+                    <p class="mt-4 text-lg max-w-2xl mx-auto text-gray-400">Built with modern, scalable, and secure technologies chosen for performance and reliability.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 max-w-4xl mx-auto text-center">
+                    <div class="p-4"><p class="font-semibold text-white">React</p><p class="text-sm text-gray-400">Frontend</p></div>
+                    <div class="p-4"><p class="font-semibold text-white">Django</p><p class="text-sm text-gray-400">Main Backend</p></div>
+                    <div class="p-4"><p class="font-semibold text-white">Flask</p><p class="text-sm text-gray-400">NLP Service</p></div>
+                    <div class="p-4"><p class="font-semibold text-white">MongoDB</p><p class="text-sm text-gray-400">Database</p></div>
+                    <div class="p-4"><p class="font-semibold text-white">spaCy</p><p class="text-sm text-gray-400">AI/NLP</p></div>
+                    <div class="p-4"><p class="font-semibold text-white">Twilio</p><p class="text-sm text-gray-400">Notifications</p></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-10">
+        <div class="container mx-auto px-6 text-center text-gray-500">
+            <p>&copy; 2025 PlanMySemester. A conceptual project to redefine academic planning in India.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Login check
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'auth.html';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show user name if available
+            var welcomeUser = document.getElementById('welcomeUser');
+            var userName = localStorage.getItem('name');
+            if (welcomeUser) {
+                welcomeUser.textContent = userName ? `Welcome, ${userName}` : 'Welcome!';
+            }
+            // Logout logic
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            });
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.tab;
+
+                    tabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+
+                    tabContents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const gradeInputs = document.querySelectorAll('#grade-inputs input');
+            const internalsInput = document.getElementById('internals');
+            const midsemInput = document.getElementById('midsem');
+            const endsemInput = document.getElementById('endsem');
+            const totalScoreEl = document.getElementById('totalScore');
+            const goalSeekerEl = document.getElementById('goalSeeker');
+
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            let gradeChart;
+            
+            Chart.defaults.color = '#8b949e';
+
+            function calculateScores() {
+                const internals = Math.min(parseFloat(internalsInput.value) || 0, 20);
+                const midsem = Math.min(parseFloat(midsemInput.value) || 0, 30);
+                const endsem = Math.min(parseFloat(endsemInput.value) || 0, 50);
+
+                const weightedInternals = (internals / 20) * 20;
+                const weightedMidsem = (midsem / 30) * 30;
+                const weightedEndsem = (endsem / 50) * 50;
+                
+                const total = weightedInternals + weightedMidsem + weightedEndsem;
+
+                const targetGrade = 80;
+                const scoreFromCompleted = weightedInternals + weightedMidsem;
+                const neededFromEndsem = targetGrade - scoreFromCompleted;
+                const neededMarks = (neededFromEndsem / 50) * 50;
+
+                return {
+                    scores: [weightedInternals, weightedMidsem, weightedEndsem],
+                    total: total.toFixed(2),
+                    goal: neededMarks > 0 ? neededMarks.toFixed(2) : 0
+                };
+            }
+
+            function updateChart() {
+                const { scores, total, goal } = calculateScores();
+                
+                gradeChart.data.datasets[0].data = scores;
+                gradeChart.update();
+                
+                totalScoreEl.textContent = `Current Score: ${total} / 100`;
+                if (goal > 50) {
+                     goalSeekerEl.textContent = `Goal of 80% is no longer reachable.`;
+                } else if (goal > 0) {
+                    goalSeekerEl.textContent = `To get 80% overall, you need ${goal} / 50 in the End-Sem.`;
+                } else {
+                    goalSeekerEl.textContent = `You've already secured over 80%!`;
+                }
+            }
+
+            function createChart() {
+                const { scores, total, goal } = calculateScores();
+
+                gradeChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Internals (20%)', 'Mid-Sem (30%)', 'End-Sem (50%)'],
+                        datasets: [{
+                            label: 'Weighted Score',
+                            data: scores,
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 206, 86, 0.5)',
+                                'rgba(255, 99, 132, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#8b949e'
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed.toFixed(2) + ' marks';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 800
+                        }
+                    }
+                });
+                updateChart();
+            }
+
+            gradeInputs.forEach(input => {
+                input.addEventListener('input', updateChart);
+            });
+            
+            createChart();
+        });
+    </script>
+</body>
+</html>
